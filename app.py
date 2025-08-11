@@ -7,8 +7,11 @@ import pandas as pd
 import tensorflow as tf 
 
 app=FastAPI()
-model = tf.keras.models.load_model("hand1_5_v3.h5")
 
+interpreter = tf.lite.Interpreter(model_path="hand1_5_v3.tflite")
+interpreter.allocate_tensors()
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 class ModelInput(BaseModel):
      data: Dict[str, Any] 
@@ -17,11 +20,16 @@ class ModelInput(BaseModel):
 
 def predict(input_data: ModelInput):
     row = input_data.data
-    X = pd.DataFrame([row])
+    X = pd.DataFrame([row]).to_numpy().astype(np.float32)
     
-    bodylang_prob = model.predict(X)[0]  # e.g. [0.1, 0.7, 0.2]
-    predicted_class = int(bodylang_prob.argmax())
-    confidence = float(max(bodylang_prob))
+    # Reshape if needed to match the model's expected input shape
+    X = X.reshape(input_details[0]['shape'])
+    
+    interpreter.set_tensor(input_details[0]['index'], X)
+    interpreter.invoke()
+    prediction = interpreter.get_tensor(output_details[0]['index'])[0]
+    predicted_class = int(prediction.argmax())
+    confidence = float(max( prediction))
 
     return {
         "predicted_class": predicted_class,
