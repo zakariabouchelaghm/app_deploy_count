@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+tensorflow-cpu==2.20.0rc0
+numpy

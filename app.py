@@ -18,7 +18,13 @@ class ModelInput(BaseModel):
 def predict(input_data: ModelInput):
     row = input_data.data
     X = pd.DataFrame([row])
-    prediction = model.predict(X)[0]
-    return {"prediction": prediction}
+    
+    bodylang_prob = model.predict(X)[0]  # e.g. [0.1, 0.7, 0.2]
+    predicted_class = int(bodylang_prob.argmax())
+    confidence = float(max(bodylang_prob))
 
+    return {
+        "predicted_class": predicted_class,
+        "confidence": confidence
+    }
     
