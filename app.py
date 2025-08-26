@@ -14,7 +14,7 @@ input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
 class ModelInput(BaseModel):
-     data: Dict[str, Any] 
+     data: List[float] 
 
 @app.post("/predict")
 
