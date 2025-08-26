@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import numpy as np
+from typing import List
 from typing import Dict, Any
 import pandas as pd
 
